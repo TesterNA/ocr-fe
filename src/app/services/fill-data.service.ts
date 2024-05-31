@@ -121,8 +121,10 @@ export class FillDataService {
         org: str,
         affKey: aff?.key,
         affValue: aff?.name,
+        affMax: aff?.similarity,
         implKey: imp?.key,
         implValue: imp?.name,
+        implMax: imp?.similarity,
         greater: this.isGA(a),
       }
 
@@ -175,8 +177,7 @@ export class FillDataService {
         mods.unshift(el);
       }
     }
-    //
-    // console.log(this.affGroup)
+
 
     this.buildUrl()
     // this.showData()
@@ -228,13 +229,13 @@ export class FillDataService {
   }
 
   private searchKeyByValueMaxRatio(obj: any, value: string): any {
-    let maxSimilarity = 90;
+    let maxSimilarity = 85;
     let resultKey = null;
     let resultName = null;
 
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        const similarity = this.fuzzyMatchService.compareStringsRatio(value.toLowerCase(), obj[key].toLowerCase());
+        const similarity = this.fuzzyMatchService.compareStringsRatio(value, obj[key]);
         if (similarity > maxSimilarity) {
           maxSimilarity = similarity;
           resultKey = key;
