@@ -145,42 +145,42 @@ export class FillDataService {
         skip = true;
       }
 
-      // return !skip ? data : null;
-      return data;
+      return !skip ? data : null;
+      // return data;
     }).filter(r => !!r);
     //
-    console.log(mods)
-    console.log(this.affGroup);
-    console.log(this.implGroup);
+    // console.log(mods)
+    // console.log(this.affGroup);
+    // console.log(this.implGroup);
 
-    // if (this.implicitCount > this.implGroup.length) {
-    //   const count = this.implicitCount - this.implGroup.length;
-    //   const actualCount = Math.min(count, mods.length);
-    //   this.implGroup = [...this.implGroup, ...mods.splice(0, actualCount)];
-    // }
+    if (this.implicitCount > this.implGroup.length) {
+      const count = this.implicitCount - this.implGroup.length;
+      const actualCount = Math.min(count, mods.length);
+      this.implGroup = [...this.implGroup, ...mods.splice(0, actualCount)];
+    }
+
+    if (this.implicitCount < this.implGroup.length) {
+      const count = this.implGroup.length - this.implicitCount;
+      for (let i = 0; i < count; i++) {
+        const el = this.implGroup.pop();
+        mods.unshift(el);
+      }
+    }
     //
-    // if (this.implicitCount < this.implGroup.length) {
-    //   const count = this.implGroup.length - this.implicitCount;
-    //   for (let i = 0; i < count; i++) {
-    //     const el = this.implGroup.pop();
-    //     mods.unshift(el);
-    //   }
-    // }
-    // //
-    // //
-    // if (this.affixCount > this.affGroup.length) {
-    //   const count = this.affixCount - this.affGroup.length;
-    //   const actualCount = Math.min(count, mods.length);
-    //   this.affGroup = [...this.affGroup, ...mods.splice(0, actualCount)]
-    // }
     //
-    // if (this.affixCount < this.affGroup.length) {
-    //   const count = this.affGroup.length - this.affixCount;
-    //   for (let i = 0; i < count; i++) {
-    //     const el = this.affGroup.pop();
-    //     mods.unshift(el);
-    //   }
-    // }
+    if (this.affixCount > this.affGroup.length) {
+      const count = this.affixCount - this.affGroup.length;
+      const actualCount = Math.min(count, mods.length);
+      this.affGroup = [...this.affGroup, ...mods.splice(0, actualCount)]
+    }
+
+    if (this.affixCount < this.affGroup.length) {
+      const count = this.affGroup.length - this.affixCount;
+      for (let i = 0; i < count; i++) {
+        const el = this.affGroup.pop();
+        mods.unshift(el);
+      }
+    }
 
 
     this.buildUrl()
