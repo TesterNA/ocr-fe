@@ -198,6 +198,7 @@ export class FillDataService {
     this.uniqueItem = null;
     this.implGroup = [];
     this.affGroup = [];
+    this.isArmour = false;
   }
 
   private showData(): void {
@@ -235,7 +236,8 @@ export class FillDataService {
 
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        const similarity = this.fuzzyMatchService.compareStringsRatio(value, obj[key]);
+        const compareStr = this.removeNonWordsAndSpacesAtEnds(obj[key].toLowerCase());
+        const similarity = this.fuzzyMatchService.compareStringsRatio(value.toLowerCase(), compareStr);
         if (similarity > maxSimilarity) {
           maxSimilarity = similarity;
           resultKey = key;
@@ -272,6 +274,10 @@ export class FillDataService {
     let withoutParentheses = str.replace(/\([^)]*/g, '');
 
     return withoutParentheses.replace(/[^\p{L}\s]/gu, '').trim();
+  }
+
+  private removeNonWordsAndSpacesAtEnds(str: string) {
+    return str.replace(/^\W|\W$/g, '').trim();
   }
 
   private isGA(str: string) {
