@@ -1,10 +1,10 @@
-<div class="flex flex-col items-center px-6 pt-[100px] h-lvh w-lvw">
-  <h1 class="leading-none text-4xl font-bold mb-[50px]">Diablo 4 <span class="orange-text"> | </span> Search for similar items</h1>
+<div class="flex flex-col items-center px-6 pt-[100px]">
+  <h1 class="leading-none text-4xl font-bold mb-[50px] text-center">Diablo 4 <span class="orange-text"> | </span> Search for similar items</h1>
 
-  <div class="flex items-center content-center min-h-[350px] gap-x-6">
+  <div class="flex items-center content-center flex-wrap justify-center min-h-[350px] gap-x-6 gap-y-6 mb-4">
     <!-- Start Drop Zone -->
     <div
-      class="relative flex flex-col outline-2 -outline-offset-4 outline-dashed w-[500px] h-[500px] p-3 rounded-2xl items-center justify-center outline-main"
+      class="relative flex flex-col outline-2 -outline-offset-4 outline-dashed w-[300px] h-[400px] md:w-[500px] md:h-[500px] p-3 rounded-2xl items-center justify-center outline-main"
       (drop)="onDrop($event)"
       (dragover)="onDragOver($event)"
     >
@@ -33,9 +33,9 @@
       <!-- Start Preview Image -->
       <div
         *ngIf="imageSrc"
-        class="flex flex-col justify-end max-w-[350px] max-h-[350px] rounded-2xl items-center relative overflow-hidden"
+        class="flex flex-col justify-end max-w-[250px] max-h-[250px] md:max-w-[350px] md:max-h-[350px] rounded-2xl items-center relative overflow-hidden"
       >
-        <img [src]="imageSrc" alt="" class="max-h-[350px] max-w-[350px] object-contain">
+        <img [src]="imageSrc" alt="" class="max-w-[250px] max-h-[250px] md:max-h-[350px] md:max-w-[350px] object-contain">
       </div>
       <!-- End Preview Image -->
 
@@ -52,16 +52,16 @@
     <!-- Start Preview Data -->
     <div
       *ngIf="imageSrc"
-      class="flex flex-col justify-center border w-[500px] h-[500px] rounded-2xl items-center relative overflow-hidden bg-result border-main"
+      class="flex flex-col justify-center border w-[300px] h-[400px] md:w-[500px] md:h-[500px] rounded-2xl items-center relative overflow-hidden bg-result border-main"
     >
-      <div class="flex flex-col w-full h-[422px]">
+      <div class="flex flex-col w-full h-[304px]">
         <div *ngIf="loading" class="flex flex-col w-full h-full items-center justify-center">
           <div class="loader"></div>
           <div class="mt-4 text-center">We trying recognize text from your image <br> Please wait</div>
         </div>
         <div
           *ngIf="!loading"
-          class="flex flex-col w-full p-5"
+          class="flex flex-col w-full px-5"
         >
           <h2 *ngIf="parsedData?.uniqueItem" class="mb-3 orange-text text-2xl">{{ parsedData?.uniqueItem }}</h2>
           <p class="t-color mb-1"> {{parsedData?.categories | titlecase}} {{parsedData?.rarity | titlecase}} {{parsedData?.equipment | titlecase}} </p>

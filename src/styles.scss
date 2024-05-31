@@ -31,3 +31,9 @@ button {
 .bg-result {
   background-color: rgba(#1A2238, 0.6);
 }
+
+@media (max-width: 767px) {
+  html {
+    font-size: 12px;
+  }
+}
