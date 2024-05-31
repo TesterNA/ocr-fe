@@ -131,6 +131,10 @@ export class FillDataService {
       if (aff?.key === '954bdb1353fa307' && this.isArmour && !armorSkipped) {
         armorSkipped = true;
         skip = true;
+      } else if (aff?.key === 'ea2f9c0f4f3b6a1' && this.equipment !== 'shield') {
+        skip = true;
+      } else if (aff?.key === '13f69013668d65d' && this.equipment === 'shield') {
+        skip = true;
       } else if (imp?.key && !aff?.key) {
         this.implGroup.push(data);
         skip = true;
