@@ -1,21 +1,17 @@
 .loader {
-  --c:no-repeat linear-gradient(#FF6A3D 0 0);
+  width: 40px;
+  height: 40px;
+  color: #FF6A3D;
   background:
-    var(--c),var(--c),var(--c),
-    var(--c),var(--c),var(--c),
-    var(--c),var(--c),var(--c);
-  background-size: 16px 16px;
-  animation:
-    l32-1 2s infinite,
-    l32-2 2s infinite;
+    conic-gradient(from  -45deg at top    20px left 50% ,#0000 ,currentColor 1deg 90deg,#0000 91deg),
+    conic-gradient(from   45deg at right  20px top  50% ,#0000 ,currentColor 1deg 90deg,#0000 91deg),
+    conic-gradient(from  135deg at bottom 20px left 50% ,#0000 ,currentColor 1deg 90deg,#0000 91deg),
+    conic-gradient(from -135deg at left   20px top  50% ,#0000 ,currentColor 1deg 90deg,#0000 91deg);
+  animation: l4 2.5s infinite cubic-bezier(0.3,1,0,1);
 }
-@keyframes l32-1 {
-  0%,100% {width:45px;height: 45px}
-  35%,65% {width:65px;height: 65px}
-}
-@keyframes l32-2 {
-  0%,40%  {background-position: 0 0,0 50%, 0 100%,50% 100%,100% 100%,100% 50%,100% 0,50% 0,  50% 50% }
-  60%,100%{background-position: 0 50%, 0 100%,50% 100%,100% 100%,100% 50%,100% 0,50% 0,0 0,  50% 50% }
+@keyframes l4 {
+  50%  {width:60px;height: 60px;transform: rotate(180deg)}
+  100% {transform: rotate(360deg)}
 }
 
 .line-container {

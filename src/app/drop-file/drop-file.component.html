@@ -52,29 +52,42 @@
     <!-- Start Preview Data -->
     <div
       *ngIf="imageSrc"
-      class="flex flex-col border w-[500px] h-[500px] rounded-2xl items-center relative overflow-hidden bg-result border-main"
+      class="flex flex-col justify-center border w-[500px] h-[500px] rounded-2xl items-center relative overflow-hidden bg-result border-main"
     >
-      <div *ngIf="loading" class="flex flex-col w-full h-full items-center justify-center">
-        <div class="loader"></div>
-        <div class="mt-4 text-center">We trying recognize text from your image <br> Please wait</div>
-      </div>
-      <div
-        class="flex flex-col w-full p-5"
-      >
-        <h2 *ngIf="parsedData?.uniqueItem" class="mb-3 orange-text text-2xl">{{ parsedData?.uniqueItem }}</h2>
-        <p class="t-color mb-1"> {{parsedData?.categories | titlecase}} {{parsedData?.rarity | titlecase}} {{parsedData?.equipment | titlecase}} </p>
-        <p *ngIf="parsedData?.power" class="mb-1"> {{parsedData?.power}} Item Power </p>
-        <ng-container *ngIf="parsedData?.group1?.length">
-          <ng-container *ngTemplateOutlet="lineRow; context: { text: 'Implicits' }"></ng-container>
+      <div class="flex flex-col w-full h-[422px]">
+        <div *ngIf="loading" class="flex flex-col w-full h-full items-center justify-center">
+          <div class="loader"></div>
+          <div class="mt-4 text-center">We trying recognize text from your image <br> Please wait</div>
+        </div>
+        <div
+          *ngIf="!loading"
+          class="flex flex-col w-full p-5"
+        >
+          <h2 *ngIf="parsedData?.uniqueItem" class="mb-3 orange-text text-2xl">{{ parsedData?.uniqueItem }}</h2>
+          <p class="t-color mb-1"> {{parsedData?.categories | titlecase}} {{parsedData?.rarity | titlecase}} {{parsedData?.equipment | titlecase}} </p>
+          <p *ngIf="parsedData?.power" class="mb-1"> {{parsedData?.power}} Item Power </p>
+          <ng-container *ngIf="parsedData?.group1?.length">
+            <ng-container *ngTemplateOutlet="lineRow; context: { text: 'Implicits' }"></ng-container>
 
-          <p *ngFor="let implicit of parsedData?.group1" class="mb-1"> {{implicit}} </p>
-        </ng-container>
-        <ng-container *ngIf="parsedData?.group2?.length">
-          <ng-container *ngTemplateOutlet="lineRow; context: { text: 'Affixes' }"></ng-container>
+            <p *ngFor="let implicit of parsedData?.group1" class="mb-1"> {{implicit}} </p>
+          </ng-container>
+          <ng-container *ngIf="parsedData?.group2?.length">
+            <ng-container *ngTemplateOutlet="lineRow; context: { text: 'Affixes' }"></ng-container>
 
-          <p *ngFor="let affix of parsedData?.group2" class="mb-1"> <span *ngIf="affix.ga" class="orange-text">&#10037;</span> {{affix.value}} </p>
-        </ng-container>
+            <p *ngFor="let affix of parsedData?.group2" class="mb-1"> <span *ngIf="affix.ga" class="orange-text">&#10037;</span> {{affix.value}} </p>
+          </ng-container>
 
+        </div>
+        <div *ngIf="!loading" class="mt-auto flex justify-center">
+          <button
+            type="button"
+            (click)="openLink()"
+            [disabled]="!parsedData?.url"
+            class="z-10 mt-6 text-green-50 px-6 py-3 rounded-lg font-medium text-base hover:bg-green-600 ease-in-out"
+          >
+            Search for similar
+          </button>
+        </div>
       </div>
     </div>
     <!-- End Preview Image -->

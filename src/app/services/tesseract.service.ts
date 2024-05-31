@@ -24,8 +24,10 @@ export class TesseractService implements OnDestroy {
     }
 
     const { data } = await this.worker!.recognize(image);
-    console.log(data)
+    // console.log(data)
     const lines = data.lines.map(line => line.words.filter(this.gaOptimizer).map(word => word.text).join(' '))
+    // const avgLine = data.lines.reduce((a, c) => a + c.confidence, 0)
+    // console.log('avgLine: ', avgLine)
     const words = data.words.filter(this.gaOptimizer).map(word => word.text);
     return { lines, words };
   }
@@ -37,5 +39,5 @@ export class TesseractService implements OnDestroy {
     }
   }
 
-  private gaOptimizer = (word: Word, i: number) => (word.text.length < 3 && word.text.includes('*')) ? word.confidence > this.gaConfidenceLvl : word.confidence > this.confidenceLvl;
+  private gaOptimizer = (word: Word, i: number) => (word.text.length < 3 && word.text.includes('*')) || (!i && (word.text.length < 2 && word.text.includes('#'))) ? word.confidence > this.gaConfidenceLvl : (word.confidence > this.confidenceLvl || word.in_dictionary);
 }

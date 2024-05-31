@@ -19,6 +19,7 @@ export interface ParsedParams extends Partial<Omit<QueryParams, 'power' | 'group
   group1?: string[];
   group2?: { value: string, ga: boolean }[];
   error?: string;
+  url?: string;
 }
 
 @Injectable({
@@ -132,6 +133,7 @@ export class FillDataService {
       }
 
       return !skip ? data : null;
+      // return data;
     }).filter(r => !!r);
     //
     // console.log(mods)
@@ -151,8 +153,8 @@ export class FillDataService {
         mods.unshift(el);
       }
     }
-
-
+    //
+    //
     if (this.affixCount > this.affGroup.length) {
       const count = this.affixCount - this.affGroup.length;
       const actualCount = Math.min(count, mods.length);
@@ -266,11 +268,13 @@ export class FillDataService {
   }
 
   private removeNonWordsAndSpaces(str: string) {
-    return str.replace(/[^\p{L}\s]/gu, '').trim();
+    let withoutParentheses = str.replace(/\([^)]*/g, '');
+
+    return withoutParentheses.replace(/[^\p{L}\s]/gu, '').trim();
   }
 
   private isGA(str: string) {
-    return str.includes('*');
+    return str.includes('*') || str.split(' ')[0].includes('#');
   }
 
   private buildUrl() {
@@ -299,25 +303,22 @@ export class FillDataService {
       queryParams.uniqueItem = this.uniqueItem?.key.toLowerCase();
     }
 
-    this.parsedData.next({
-      ...queryParams,
-      power: this.power,
-      group1: this.implGroup.map(item => item.implValue),
-      group2: this.affGroup.map(item => ({value: item.affValue, ga: item.greater})),
-      equipment: this.equipment.toLowerCase(),
-      uniqueItem: this.uniqueItem?.name
-    });
-
-
-
-
     // TODO: add mode and classes
     // mode,
     // classes,
 
 
     const url = this.constructUrl(this.baseUrl, queryParams);
-    console.log(url)
+
+    this.parsedData.next({
+      ...queryParams,
+      power: this.power,
+      group1: this.implGroup.map(item => item.implValue),
+      group2: this.affGroup.map(item => ({value: item.affValue, ga: item.greater})),
+      equipment: this.equipment.toLowerCase(),
+      uniqueItem: this.uniqueItem?.name,
+      url
+    });
   }
 
   private constructUrl(baseUrl: string, queryParams: any) {

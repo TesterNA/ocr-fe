@@ -30,6 +30,8 @@ export class DropFileComponent {
 
   #hotToastService = inject(HotToastService);
   #fillDataService = inject(FillDataService);
+  private readonly preprocessor = inject(PreprocessService);
+  private readonly tesseract = inject(TesseractService);
 
   @HostListener('document:paste', ['$event'])
   handlePaste(event: ClipboardEvent) {
@@ -44,7 +46,7 @@ export class DropFileComponent {
           this.showError(data?.error);
           return;
         }
-        console.log(data)
+        // console.log(data)
         this.parsedData = data
       })
   }
@@ -90,11 +92,7 @@ export class DropFileComponent {
     this.imageSrc = '';
   }
 
-  private readonly preprocessor = inject(PreprocessService);
-  private readonly tesseract = inject(TesseractService);
-
   onPaste(event: ClipboardEvent): void {
-    console.log(123)
     this.result = null;
     const clipboardData = event.clipboardData || (window as any).clipboardData;
     const item: DataTransferItem = clipboardData.items[0];
@@ -119,12 +117,18 @@ export class DropFileComponent {
     }
   }
 
+  openLink() {
+    if (!this.parsedData?.url) return;
+    window.open(this.parsedData?.url, '_blank');
+  }
+
   private async onloadFn(img: HTMLImageElement) {
     const preprocessedImage = this.preprocessor.preprocessImage(img);
     if (!preprocessedImage) return;
     const preprocessedImgElement = new Image();
     preprocessedImgElement.src = preprocessedImage;
     this.result = await this.tesseract.recognizeImage(preprocessedImage);
+    // console.log(this.result)
     this.#fillDataService.fillData(this.result);
 
   }
