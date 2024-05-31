@@ -30,7 +30,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/@ngxpert/hot-toast/src/styles/styles.css"
             ],
             "scripts": []
           },
@@ -51,7 +52,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "optimization": false,
+              "optimization": true,
               "extractLicenses": false,
               "sourceMap": true
             }

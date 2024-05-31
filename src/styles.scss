@@ -1,1 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color : #1A2238 !important;
+  color : #FFFFFF !important;
+}
+
+button {
+  background-color : #FF6A3D !important;
+}
+
+.orange-text {
+  color : #FF6A3D !important;
+}
+
+.t-color {
+  color: #F4DB7D;
+}
+
+.outline-main {
+  outline-color: #9DAAF2;
+}
+
+.border-main {
+  border-color: #9DAAF2;
+}
+
+.bg-result {
+  background-color: rgba(#1A2238, 0.6);
+}

@@ -1,0 +1,90 @@
+<div class="flex flex-col items-center px-6 pt-[100px] h-lvh w-lvw">
+  <h1 class="leading-none text-4xl font-bold mb-[50px]">Diablo 4 <span class="orange-text"> | </span> Search for similar items</h1>
+
+  <div class="flex items-center content-center min-h-[350px] gap-x-6">
+    <!-- Start Drop Zone -->
+    <div
+      class="relative flex flex-col outline-2 -outline-offset-4 outline-dashed w-[500px] h-[500px] p-3 rounded-2xl items-center justify-center outline-main"
+      (drop)="onDrop($event)"
+      (dragover)="onDragOver($event)"
+    >
+      <input
+        #fileInput
+        type="file"
+        [accept]="allowedFileTypes"
+        class="absolute w-full h-full cursor-pointer opacity-0 top-0 left-0"
+        (change)="handleChange($event)"
+        hidden="hidden"
+      />
+
+      <ng-container *ngIf="!imageSrc">
+        <span class="mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="#9DAAF2" class="w-10 h-10">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15" />
+        </svg>
+      </span>
+
+        <p class="text-center text-base max-w-[90%]">
+          Drag and drop <br />
+          file here to upload. <br />
+          (PNG, JPG)
+        </p>
+      </ng-container>
+      <!-- Start Preview Image -->
+      <div
+        *ngIf="imageSrc"
+        class="flex flex-col justify-end max-w-[350px] max-h-[350px] rounded-2xl items-center relative overflow-hidden"
+      >
+        <img [src]="imageSrc" alt="" class="max-h-[350px] max-w-[350px] object-contain">
+      </div>
+      <!-- End Preview Image -->
+
+      <button
+        type="button"
+        (click)="fileInput.click()"
+        class="z-10 mt-6 text-green-50 px-6 py-3 rounded-lg font-medium text-base hover:bg-green-600 ease-in-out"
+      >
+        Browse File
+      </button>
+    </div>
+    <!-- End Drop Zone -->
+
+    <!-- Start Preview Data -->
+    <div
+      *ngIf="imageSrc"
+      class="flex flex-col border w-[500px] h-[500px] rounded-2xl items-center relative overflow-hidden bg-result border-main"
+    >
+      <div *ngIf="loading" class="flex flex-col w-full h-full items-center justify-center">
+        <div class="loader"></div>
+        <div class="mt-4 text-center">We trying recognize text from your image <br> Please wait</div>
+      </div>
+      <div
+        class="flex flex-col w-full p-5"
+      >
+        <h2 *ngIf="parsedData?.uniqueItem" class="mb-3 orange-text text-2xl">{{ parsedData?.uniqueItem }}</h2>
+        <p class="t-color mb-1"> {{parsedData?.categories | titlecase}} {{parsedData?.rarity | titlecase}} {{parsedData?.equipment | titlecase}} </p>
+        <p *ngIf="parsedData?.power" class="mb-1"> {{parsedData?.power}} Item Power </p>
+        <ng-container *ngIf="parsedData?.group1?.length">
+          <ng-container *ngTemplateOutlet="lineRow; context: { text: 'Implicits' }"></ng-container>
+
+          <p *ngFor="let implicit of parsedData?.group1" class="mb-1"> {{implicit}} </p>
+        </ng-container>
+        <ng-container *ngIf="parsedData?.group2?.length">
+          <ng-container *ngTemplateOutlet="lineRow; context: { text: 'Affixes' }"></ng-container>
+
+          <p *ngFor="let affix of parsedData?.group2" class="mb-1"> <span *ngIf="affix.ga" class="orange-text">&#10037;</span> {{affix.value}} </p>
+        </ng-container>
+
+      </div>
+    </div>
+    <!-- End Preview Image -->
+  </div>
+</div>
+
+<ng-template #lineRow let-text="text">
+  <div class="line-container my-2">
+    <div class="line"></div>
+    <span class="line-text text-gray-400">{{ text }}</span>
+    <div class="line"></div>
+  </div>
+</ng-template>
