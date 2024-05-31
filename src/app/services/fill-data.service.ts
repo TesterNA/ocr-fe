@@ -128,7 +128,7 @@ export class FillDataService {
         greater: this.isGA(a),
       }
 
-      if (aff?.key === '954bdb1353fa307' && this.isArmour && !armorSkipped) {
+      if (aff?.key === '657a88e4b85e08a' && this.isArmour && !armorSkipped) {
         armorSkipped = true;
         skip = true;
       } else if (aff?.key === 'ea2f9c0f4f3b6a1' && this.equipment !== 'shield') {
@@ -145,42 +145,42 @@ export class FillDataService {
         skip = true;
       }
 
-      return !skip ? data : null;
-      // return data;
+      // return !skip ? data : null;
+      return data;
     }).filter(r => !!r);
     //
-    // console.log(mods)
-    // console.log(this.affGroup);
-    // console.log(this.implGroup);
+    console.log(mods)
+    console.log(this.affGroup);
+    console.log(this.implGroup);
 
-    if (this.implicitCount > this.implGroup.length) {
-      const count = this.implicitCount - this.implGroup.length;
-      const actualCount = Math.min(count, mods.length);
-      this.implGroup = [...this.implGroup, ...mods.splice(0, actualCount)];
-    }
-
-    if (this.implicitCount < this.implGroup.length) {
-      const count = this.implGroup.length - this.implicitCount;
-      for (let i = 0; i < count; i++) {
-        const el = this.implGroup.pop();
-        mods.unshift(el);
-      }
-    }
+    // if (this.implicitCount > this.implGroup.length) {
+    //   const count = this.implicitCount - this.implGroup.length;
+    //   const actualCount = Math.min(count, mods.length);
+    //   this.implGroup = [...this.implGroup, ...mods.splice(0, actualCount)];
+    // }
     //
+    // if (this.implicitCount < this.implGroup.length) {
+    //   const count = this.implGroup.length - this.implicitCount;
+    //   for (let i = 0; i < count; i++) {
+    //     const el = this.implGroup.pop();
+    //     mods.unshift(el);
+    //   }
+    // }
+    // //
+    // //
+    // if (this.affixCount > this.affGroup.length) {
+    //   const count = this.affixCount - this.affGroup.length;
+    //   const actualCount = Math.min(count, mods.length);
+    //   this.affGroup = [...this.affGroup, ...mods.splice(0, actualCount)]
+    // }
     //
-    if (this.affixCount > this.affGroup.length) {
-      const count = this.affixCount - this.affGroup.length;
-      const actualCount = Math.min(count, mods.length);
-      this.affGroup = [...this.affGroup, ...mods.splice(0, actualCount)]
-    }
-
-    if (this.affixCount < this.affGroup.length) {
-      const count = this.affGroup.length - this.affixCount;
-      for (let i = 0; i < count; i++) {
-        const el = this.affGroup.pop();
-        mods.unshift(el);
-      }
-    }
+    // if (this.affixCount < this.affGroup.length) {
+    //   const count = this.affGroup.length - this.affixCount;
+    //   for (let i = 0; i < count; i++) {
+    //     const el = this.affGroup.pop();
+    //     mods.unshift(el);
+    //   }
+    // }
 
 
     this.buildUrl()
