@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {FuzzyMatchService} from "./fuzzy-match.service";
-import {AFFIXES, Categories, Equipments, Rarities, UNIQUES} from "../consts";
-import {BehaviorSubject, Subject} from "rxjs";
+import {AFFIXES, Armors, Categories, Equipments, IMPLICITS, ImplicitsCount, Rarities, UNIQUES} from "../consts";
+import {BehaviorSubject} from "rxjs";
 
 export interface QueryParams {
   itemType: string;
@@ -32,15 +32,17 @@ export class FillDataService {
   readonly rarities = Rarities;
   readonly categories = Categories;
   readonly equipments = Equipments;
+  readonly equipmentsTypeOfArmor = Armors;
   readonly uniques = UNIQUES;
-  readonly bd = AFFIXES;
-  readonly affixes = this.recurseAffix(this.bd, 'affixes');
-  readonly implicits = this.recurseAffix(this.bd, 'implicits');
+  readonly implicitsCount = ImplicitsCount;
+  readonly affixes = AFFIXES;
+  readonly implicits = IMPLICITS;
 
   public parsedData = new BehaviorSubject<ParsedParams | null>(null);
 
   implicitCount = 0;
   affixCount = 0;
+  isArmour = false;
   bound = false;
 
   link: string;
@@ -58,8 +60,7 @@ export class FillDataService {
   private readonly fuzzyMatchService = inject(FuzzyMatchService);
 
   public fillData(data: { lines:string[]; words: string[] }): void {
-    console.log(this.affixes)
-    console.log(this.implicits)
+    let armorSkipped = false;
     if (!data) {
       this.parsedData.next({ error: 'Text not recognized '});
       return;
@@ -83,10 +84,13 @@ export class FillDataService {
     this.category = this.fuzzyMatchService.findBestMatchGeneral(data.words, this.categories) || '';
     this.rarity = this.fuzzyMatchService.findBestMatchGeneral(data.words, this.rarities) || '';
     this.equipment = this.fuzzyMatchService.findBestMatchGeneral(data.words, this.equipments) || '';
+    this.isArmour = this.equipmentsTypeOfArmor.includes(this.equipment);
 
     this.power = parseInt((pwrLvl || '').match(/\d+/)?.[0] || '0', 10);
 
-    this.implicitCount = data.lines.some(line => line.toLowerCase().includes('damage per second') || line.toLowerCase().includes('damage per hit') || line.toLowerCase().includes('attacks per second')) || this.equipment === 'amulet' ? 1 : this.equipment === 'ring' ? 2 : 0;
+    // this.implicitCount = data.lines.some(line => line.toLowerCase().includes('damage per second') || line.toLowerCase().includes('damage per hit') || line.toLowerCase().includes('attacks per second')) || this.equipment === 'amulet' ? 1 : this.equipment === 'ring' ? 2 : 0;
+    // @ts-ignore
+    this.implicitCount = this.implicitsCount[this.equipment] || 0;
     this.affixCount = this.rarity === 'rare' ? 2 : this.rarity === 'legendary' ? 3 : 4;
 
     if (this.rarity === 'unique') {
@@ -122,7 +126,10 @@ export class FillDataService {
         greater: this.isGA(a),
       }
 
-      if (imp?.key && !aff?.key) {
+      if (aff?.key === '954bdb1353fa307' && this.isArmour && !armorSkipped) {
+        armorSkipped = true;
+        skip = true;
+      } else if (imp?.key && !aff?.key) {
         this.implGroup.push(data);
         skip = true;
       } else if (aff?.key && !imp?.key) {
@@ -225,24 +232,16 @@ export class FillDataService {
     let resultKey = null;
     let resultName = null;
 
-    const recursiveSearch = (currentObj: any) => {
-      for (const key in currentObj) {
-        if (currentObj.hasOwnProperty(key)) {
-          if (typeof currentObj[key] === 'object' && currentObj[key].hasOwnProperty('name')) {
-            const similarity = this.fuzzyMatchService.compareStringsRatio(value, currentObj[key]['name']);
-            if (similarity > maxSimilarity) {
-              maxSimilarity = similarity;
-              resultKey = key;
-              resultName = currentObj[key]['name'];
-            }
-          } else if (typeof currentObj[key] === 'object') {
-            recursiveSearch(currentObj[key]);
-          }
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const similarity = this.fuzzyMatchService.compareStringsRatio(value.toLowerCase(), obj[key].toLowerCase());
+        if (similarity > maxSimilarity) {
+          maxSimilarity = similarity;
+          resultKey = key;
+          resultName = obj[key];
         }
       }
-    };
-
-    recursiveSearch(obj);
+    }
 
     if (resultKey !== null) {
       return { key: resultKey, name: resultName, similarity: maxSimilarity };
@@ -250,6 +249,7 @@ export class FillDataService {
       return null;
     }
   }
+
 
   private searchUniqueByValue(obj: any, value: string): any {
     for (const key in obj) {

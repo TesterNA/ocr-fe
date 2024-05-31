@@ -1,5 +1,6 @@
-import * as data2 from '../assets/data2.json';
-import * as data from '../assets/data.json';
+import {default as data} from '../assets/data2.json';
+import {default as affixes} from '../assets/affixes.json';
+import {default as implicits} from '../assets/implicits.json';
 
 
 // export const Rarities: string[] = ['Legendary', 'Rare', 'Unique'];
@@ -24,6 +25,32 @@ export const Equipments: string[] = [
   'two-handed scythe', 'two-handed sword', 'wand'
 ];
 
+export const Armors: string[] = ['boots', 'chest armor', 'gloves', 'helm', 'pants', 'shield'];
 
-export const UNIQUES: object = data2;
-export const AFFIXES: object = data;
+
+export const UNIQUES: object = data;
+export const AFFIXES: any = affixes;
+export const IMPLICITS: object = implicits;
+
+export const ImplicitsCount = {
+  'ring': 2,
+  'amulet': 1,
+  'boots': 1,
+  'focus': 1,
+  'shield': 4,
+  'axe': 1,
+  'bow': 1,
+  'crossbow': 1,
+  'dagger': 1,
+  'mace': 1,
+  'polearm': 1,
+  'scythe': 1,
+  'staff': 1,
+  'sword': 1,
+  'totem': 1,
+  'two-handed axe': 1,
+  'two-handed mace': 1,
+  'two-handed scythe': 1,
+  'two-handed sword': 1,
+  'wand': 1,
+}

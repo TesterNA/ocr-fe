@@ -69,12 +69,12 @@
           <ng-container *ngIf="parsedData?.group1?.length">
             <ng-container *ngTemplateOutlet="lineRow; context: { text: 'Implicits' }"></ng-container>
 
-            <p *ngFor="let implicit of parsedData?.group1" class="mb-1"> {{implicit}} </p>
+            <p *ngFor="let implicit of parsedData?.group1" class="mb-1"> {{implicit | titlecase}} </p>
           </ng-container>
           <ng-container *ngIf="parsedData?.group2?.length">
             <ng-container *ngTemplateOutlet="lineRow; context: { text: 'Affixes' }"></ng-container>
 
-            <p *ngFor="let affix of parsedData?.group2" class="mb-1"> <span *ngIf="affix.ga" class="orange-text">&#10037;</span> {{affix.value}} </p>
+            <p *ngFor="let affix of parsedData?.group2" class="mb-1"> <span *ngIf="affix.ga" class="orange-text">&#10037;</span> {{affix.value | titlecase}} </p>
           </ng-container>
 
         </div>
