@@ -65,7 +65,7 @@ export class FillDataService {
       this.parsedData.next({ error: 'Text not recognized '});
       return;
     }
-    this.bound = data.lines.some(line => line.toLowerCase().includes('bound') || line.toLowerCase().includes('account'));
+    this.bound = data.lines.some(line => line.toLowerCase().includes('bound') || line.toLowerCase().includes('account') || line.toLowerCase().includes('not tradable'));
     if (this.bound) {
       this.parsedData.next({ error: 'Bound items not supported'});
       return;
