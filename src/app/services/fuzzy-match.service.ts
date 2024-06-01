@@ -8,27 +8,24 @@ export class FuzzyMatchService {
 
   constructor() { }
 
-  findBestMatchingString(searchString: string, arrayOfStrings: string[], threshold: number = 70): string | null {
-    const results = fuzz.extract(searchString, arrayOfStrings, { scorer: fuzz.partial_ratio });
-    const bestMatch = results[0];
+  // UTILITY-service
 
-    if (bestMatch[1] >= threshold) {
-      return bestMatch[0];
-    }
+  // this service use fuzzyball lib - library for matching similar text, etc. wit a lot options,
+  // I use all this strings for compare strings from tesseract recognition with DB data(in my case json) instead of comparing(===) or String.includes to get more correct data without artifacts
 
-    return null;
-  }
-
+  // Function use for compare 2 string and return true if it similar at least for some threshold, i use
   compareStrings(searchString: string, stringForCompare: string, threshold: number = 70): boolean {
     const results = fuzz.ratio(searchString, stringForCompare);
 
     return results >= threshold;
   }
 
+  // this fn almost same as above, but return just ratio of similarity for some other case
   compareStringsRatio(searchString: string, stringForCompare: string): number {
     return fuzz.ratio(searchString, stringForCompare);
   }
 
+  // comparing strings from 2 diff arrays of strings and return most similar value (90 threshold)
   findBestMatchGeneral(words: string[], choices: string[]): string | null {
     for (let word of words) {
       const result = fuzz.extract(word.toLowerCase(), choices, { scorer: fuzz.token_set_ratio, cutoff: 90 });

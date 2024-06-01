@@ -5,7 +5,6 @@ import {PreprocessService} from "../services/preprocess.service";
 import {TesseractService} from "../services/tesseract.service";
 import {FillDataService, ParsedParams} from "../services/fill-data.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {data} from "autoprefixer";
 
 const ALLOWED_FILE_TYPES = [
   'image/jpeg',
@@ -21,6 +20,9 @@ const ALLOWED_FILE_TYPES = [
 })
 export class DropFileComponent {
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
+
+  // This component just load image, put it for recognition, etc. to services and then display data from it in template
+  // I think there no need many explanations. Just file uploading use default JS method, event listener, etc.
 
   allowedFileTypes = ALLOWED_FILE_TYPES;
   imageSrc!: string;
@@ -47,7 +49,9 @@ export class DropFileComponent {
           return;
         }
         // console.log(data)
-        this.parsedData = data
+
+        // Here i get data i display in html (parsed manually for this only)
+        this.parsedData = data;
       })
   }
 
@@ -77,7 +81,7 @@ export class DropFileComponent {
     }
 
 
-    this.ocrData(file, true);
+    this.ocrData(file);
   }
 
   onDragOver(event: DragEvent) {
@@ -101,7 +105,7 @@ export class DropFileComponent {
 
   }
 
-  ocrData(data: DataTransferItem | File, skipGetAsFile = false) {
+  ocrData(data: DataTransferItem | File) {
     this.#fillDataService.reset()
     this.imageSrc = '';
     this.parsedData = null;
