@@ -83,7 +83,7 @@ export class FillDataService {
       this.parsedData.next({ error: 'Bound items not supported'});
       return;
     }
-    const pwrLvl = data.lines.find(line => line.toLowerCase().includes('item power'));
+    const pwrLvl = data.lines.find(line => this.fuzzyMatchService.compareStrings('item power', line.toLowerCase()));
 
     // simple err, need make it more precise and complex i think
     if (!pwrLvl) {
@@ -135,7 +135,11 @@ export class FillDataService {
       const str = this.removeNonWords(a);
 
       // use simple loop with fuzzyservice found affixes similar to line
-      const aff = this.searchKeyByValueMaxRatio(this.affixes, str);
+      // additional condition here bacues you have 2 same affix with diff id for diff type of equipment
+      const aff = this.searchKeyByValueMaxRatio(this.affixes, str, {
+        'ea2f9c0f4f3b6a1': this.equipment === 'shield',
+        '13f69013668d65d': this.equipment !== 'shield'
+      });
       // use simple loop with fuzzyservice found implicits similar to line
       const imp = this.searchKeyByValueMaxRatio(this.implicits, str);
 
@@ -158,18 +162,13 @@ export class FillDataService {
         greater: this.isGA(a),
       }
       // Just console it for debugging
-      // console.log(data)
+      console.log(data)
 
       // here conditions when we not leave founded/current item to result array of affixes/implicits
       // 1 - for skip first line of armor for armor-items
-      // 2 and 3 - for some reason ON YOUR site 1 affix have diff ID for shields and non-shields
       // all other - if we found only implicit - i force push data as implicit, if only affix - force push to affix or skip if no found data
       if (aff?.key === '657a88e4b85e08a' && this.isArmour && !armorSkipped) {
         armorSkipped = true;
-        skip = true;
-      } else if (aff?.key === 'ea2f9c0f4f3b6a1' && this.equipment !== 'shield') {
-        skip = true;
-      } else if (aff?.key === '13f69013668d65d' && this.equipment === 'shield') {
         skip = true;
       } else if (imp?.key && !aff?.key) {
         this.implGroup.push(data);
@@ -241,13 +240,15 @@ export class FillDataService {
 
   // simple loop fn with fuzzyservice found affixes similar to line AND RETURN MIN similar for 85% but return MAX similar, thats why here loop
   // required for situation like line "Non physical damage" have similarity to "Physical damage" more than 90%, but we really need "Non physical damage"
-  private searchKeyByValueMaxRatio(obj: any, value: string): any {
+  private searchKeyByValueMaxRatio(obj: any, value: string, additionalConditionForSpecificId?: { [key: string]: boolean }): any {
     let maxSimilarity = 85;
     let resultKey = null;
     let resultName = null;
 
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
+
+        if(additionalConditionForSpecificId?.hasOwnProperty(key) && !additionalConditionForSpecificId?.[key]) continue;
         // remove non words + lowercase for string from db (in generally i make a lot comparings with lowercase cause in testings its show me better result)
         const compareStr = this.removeNonWordsAndSpacesAtEnds(obj[key].toLowerCase());
         // comparing using fuzzy service and in loop save max similar line

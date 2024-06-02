@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import {min} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +50,7 @@ export class PreprocessService {
     ctx.putImageData(imageData, 0, 0);
     // call removing sometimes vertical lines in images
     this.removeVerticalLines(ctx, canvas);
+    // this.sharpenImage(ctx, canvas);
 
     return this.cropEmptyAndShortSides(ctx, canvas);
   }
@@ -174,5 +176,57 @@ export class PreprocessService {
     // console.log(croppedWidth);
 
     return croppedCanvas.toDataURL();
+  }
+
+  // Simple sharp-image function, not use already, but probable it usefull =))
+  private sharpenImage(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    const w = imageData.width;
+    const h = imageData.height;
+
+    // Sharpening kernel
+    const weights = [
+      0, -0.5,  0,
+      -0.5,  3, -0.5,
+      0, -0.5,  0
+    ];
+    const side = Math.round(Math.sqrt(weights.length));
+    const halfSide = Math.floor(side / 2);
+
+    // Output array
+    const output = ctx.createImageData(canvas.width, canvas.height);
+    const outputData = output.data;
+
+    // Loop through every pixel
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const sy = y;
+        const sx = x;
+        const dstOff = (y * w + x) * 4;
+
+        // Compute the RGBA of the pixel
+        let r = 0, g = 0, b = 0;
+        for (let cy = 0; cy < side; cy++) {
+          for (let cx = 0; cx < side; cx++) {
+            const scy = sy + cy - halfSide;
+            const scx = sx + cx - halfSide;
+            if (scy >= 0 && scy < h && scx >= 0 && scx < w) {
+              const srcOff = (scy * w + scx) * 4;
+              const wt = weights[cy * side + cx];
+              r += data[srcOff] * wt;
+              g += data[srcOff + 1] * wt;
+              b += data[srcOff + 2] * wt;
+            }
+          }
+        }
+        outputData[dstOff] = r;
+        outputData[dstOff + 1] = g;
+        outputData[dstOff + 2] = b;
+        outputData[dstOff + 3] = data[dstOff + 3]; // Copy alpha
+      }
+    }
+
+    ctx.putImageData(output, 0, 0);
   }
 }
