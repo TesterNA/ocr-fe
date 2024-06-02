@@ -162,7 +162,7 @@ export class FillDataService {
         greater: this.isGA(a),
       }
       // Just console it for debugging
-      console.log(data)
+      // console.log(data)
 
       // here conditions when we not leave founded/current item to result array of affixes/implicits
       // 1 - for skip first line of armor for armor-items
