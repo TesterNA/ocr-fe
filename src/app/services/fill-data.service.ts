@@ -83,7 +83,7 @@ export class FillDataService {
       this.parsedData.next({ error: 'Bound items not supported'});
       return;
     }
-    const pwrLvl = data.lines.find(line => this.fuzzyMatchService.compareStrings('item power', line.toLowerCase()));
+    const pwrLvl = data.lines.find(line => this.fuzzyMatchService.compareStrings('item power', line.toLowerCase(), 50));
 
     // simple err, need make it more precise and complex i think
     if (!pwrLvl) {
@@ -162,7 +162,9 @@ export class FillDataService {
         greater: this.isGA(a),
       }
       // Just console it for debugging
-      // console.log(data)
+      if (localStorage.getItem('debug')) {
+        console.log(data);
+      }
 
       // here conditions when we not leave founded/current item to result array of affixes/implicits
       // 1 - for skip first line of armor for armor-items
