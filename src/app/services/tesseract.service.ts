@@ -44,6 +44,6 @@ export class TesseractService {
       return false;
     }
 
-    return word.confidence > this.confidenceLvl || word.in_dictionary;
+    return word.confidence > this.confidenceLvl || word.text.length > 3 && word.in_dictionary;
   };
 }

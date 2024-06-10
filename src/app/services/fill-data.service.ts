@@ -2,6 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {FuzzyMatchService} from "./fuzzy-match.service";
 import {AFFIXES, Armors, Categories, Equipments, IMPLICITS, ImplicitsCount, Rarities, UNIQUES} from "../consts";
 import {BehaviorSubject} from "rxjs";
+import {setResultProperty} from "../utility";
 
 export interface QueryParams {
   itemType: string;
@@ -21,6 +22,8 @@ export interface ParsedParams extends Partial<Omit<QueryParams, 'power' | 'group
   error?: string;
   url?: string;
 }
+
+export interface AffixFound { key: string; name: string; similarity: number }
 
 @Injectable({
   providedIn: 'root'
@@ -111,6 +114,7 @@ export class FillDataService {
     if (this.rarity === 'unique') {
       const index = data.lines.findIndex(line => line.toLowerCase().includes(this.category.toLowerCase()) || line.toLowerCase().includes(this.rarity.toLowerCase()));
       const name = data.lines.slice(0, index).join(' ').trim().replace(/[^\w\s]/g, '');
+      console.log(name)
       this.uniqueItem = this.searchUniqueByValue(this.uniques, name) || null;
     }
 
@@ -130,18 +134,49 @@ export class FillDataService {
     const affArr = data.lines.slice(startFFIndex + 1, endFFIndex);
 
     // MAIN LOGIC of getting correct affixes and implicits
-    const mods = affArr.map((a) => {
+    const mods = affArr.map((a, i, array) => {
       // remove from recognised lines all non words using regex (BE AWARE, IN THIS APP I DONT LOOK AT VALUE OF THIS AFFIXES, SO IF U need this, make some changes prob)
-      const str = this.removeNonWords(a);
+      let str = this.removeNonWords(a);
+      if (str.length < 3) {
+        return null;
+      }
+      let mergeStr: string = '';
+      if (array[i + 1]) {
+        mergeStr = this.removeNonWords(a) + ' ' + this.removeNonWords(array[i+1]);
+      }
 
-      // use simple loop with fuzzyservice found affixes similar to line
-      // additional condition here bacues you have 2 same affix with diff id for diff type of equipment
-      const aff = this.searchKeyByValueMaxRatio(this.affixes, str, {
-        'ea2f9c0f4f3b6a1': this.equipment === 'shield',
-        '13f69013668d65d': this.equipment !== 'shield'
-      });
-      // use simple loop with fuzzyservice found implicits similar to line
-      const imp = this.searchKeyByValueMaxRatio(this.implicits, str);
+      const getData = (string: string) => {
+        // use simple loop with fuzzyservice found affixes similar to line
+        // additional condition here bacues you have 2 same affix with diff id for diff type of equipment
+        const aff = this.searchKeyByValueMaxRatio(this.affixes, string, {
+          'ea2f9c0f4f3b6a1': this.equipment === 'shield',
+          '13f69013668d65d': this.equipment !== 'shield'
+        });
+        // use simple loop with fuzzyservice found implicits similar to line
+        const imp = this.searchKeyByValueMaxRatio(this.implicits, string);
+
+        return {aff, imp};
+      }
+
+      let aff: AffixFound;
+      let imp: AffixFound;
+      let mergedData: {aff?: AffixFound, imp?: AffixFound};
+      let originalData: {aff?: AffixFound, imp?: AffixFound};
+      let resultData: {aff?: AffixFound, imp?: AffixFound};
+
+      originalData = getData(str);
+      if (mergeStr?.length) {
+        mergedData = getData(mergeStr);
+        const result = setResultProperty(originalData, mergedData);
+        resultData = result?.object;
+        str = result?.index === 2 ? mergeStr : str;
+      } else {
+        resultData = originalData;
+      }
+
+      if (!resultData.aff && !resultData.imp) return null;
+
+      ({aff, imp} = resultData as {aff: AffixFound, imp: AffixFound});
 
       // special flag to skip founded result by some condition
       let skip = false
